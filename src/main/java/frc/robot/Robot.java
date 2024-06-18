@@ -6,6 +6,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.xrp.XRPMotor;
 
@@ -21,6 +22,8 @@ public class Robot extends TimedRobot {
     private final XRPMotor rightMotor = new XRPMotor(1);
 
     private final XboxController controller = new XboxController(0);
+
+    private double startTime;
     /**
      * This method is run when the robot is first started up and should be used for any
      * initialization code.
@@ -53,12 +56,23 @@ public class Robot extends TimedRobot {
      * chooser code above as well.
      */
     @Override
-    public void autonomousInit() {}
+    public void autonomousInit() {
+        startTime = Timer.getFPGATimestamp();
+    }
     
     
     /** This method is called periodically during autonomous. */
     @Override
-    public void autonomousPeriodic() {}
+    public void autonomousPeriodic() {
+        double currentTime = Timer.getFPGATimestamp();
+        if (currentTime - startTime < 2) {
+            leftMotor.set(0.5);
+            rightMotor.set(0.5);
+        } else {
+            leftMotor.set(0);
+            rightMotor.set(0);
+        }
+    }
     
     
     /** This method is called once when teleop is enabled. */
