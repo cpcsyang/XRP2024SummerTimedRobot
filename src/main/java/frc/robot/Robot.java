@@ -6,6 +6,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.xrp.XRPMotor;
 
 
@@ -18,13 +19,16 @@ import edu.wpi.first.wpilibj.xrp.XRPMotor;
 public class Robot extends TimedRobot {
     private final XRPMotor leftMotor = new XRPMotor(0);
     private final XRPMotor rightMotor = new XRPMotor(1);
-    
+
+    private final XboxController controller = new XboxController(0);
     /**
      * This method is run when the robot is first started up and should be used for any
      * initialization code.
      */
     @Override
-    public void robotInit() {}
+    public void robotInit() {
+        rightMotor.setInverted(true);
+    }
     
     
     /**
@@ -65,8 +69,12 @@ public class Robot extends TimedRobot {
     /** This method is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        leftMotor.set(0.5);
-        rightMotor.set(0.5);
+        double speed = -controller.getRawAxis(1) * 0.7;
+        double turn = controller.getRawAxis(4) * 0.5;
+        double left = speed + turn;
+        double right = speed - turn;
+        leftMotor.set(left);
+        rightMotor.set(right);
     }
     
     
