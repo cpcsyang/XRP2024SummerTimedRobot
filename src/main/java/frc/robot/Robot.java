@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.xrp.XRPMotor;
 
 
@@ -37,6 +38,9 @@ public class Robot extends TimedRobot {
     // The XRP has onboard encoders that are hardcoded to use DIO pins 4/5 and 6/7 for the left and right
     private final Encoder leftEncoder = new Encoder(4, 5);
     private final Encoder rightEncoder = new Encoder(6, 7);
+
+    // Set up the differential drive controller
+    private final DifferentialDrive diffDrive = new DifferentialDrive(leftMotor, rightMotor);
 
     /**
      * This method is run when the robot is first started up and should be used for any
@@ -134,11 +138,8 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         double speed = -controller.getRawAxis(1) * 0.7;
-        double turn = controller.getRawAxis(4) * 0.5;
-        double left = speed + turn;
-        double right = speed - turn;
-        leftMotor.set(left);
-        rightMotor.set(right);
+        double turn = -controller.getRawAxis(4) * 0.5;
+        diffDrive.arcadeDrive(speed, turn);
     }
     
     
