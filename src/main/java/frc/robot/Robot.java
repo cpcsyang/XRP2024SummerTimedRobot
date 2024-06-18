@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -18,12 +19,25 @@ import edu.wpi.first.wpilibj.xrp.XRPMotor;
  * project.
  */
 public class Robot extends TimedRobot {
+    private static final double GEAR_RATIO =
+            (30.0 / 14.0) * (28.0 / 16.0) * (36.0 / 9.0) * (26.0 / 8.0); // 48.75:1
+    private static final double COUNTS_PER_MOTOR_SHAFT_REV = 12.0;
+    private static final double COUNTS_PER_REVOLUTION = COUNTS_PER_MOTOR_SHAFT_REV * GEAR_RATIO; // 585.0
+    private static final double WHEEL_DIAMETER_INCH = 2.3622; // 60 mm
+
+    // The XRP has the left and right motors set to channel 0 and 1 respectively
     private final XRPMotor leftMotor = new XRPMotor(0);
     private final XRPMotor rightMotor = new XRPMotor(1);
 
+    // Assumes a gamepad plugged into channel 0
     private final XboxController controller = new XboxController(0);
 
     private double startTime;
+
+    // The XRP has onboard encoders that are hardcoded to use DIO pins 4/5 and 6/7 for the left and right
+    private final Encoder leftEncoder = new Encoder(4, 5);
+    private final Encoder rightEncoder = new Encoder(6, 7);
+
     /**
      * This method is run when the robot is first started up and should be used for any
      * initialization code.
@@ -31,9 +45,32 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         rightMotor.setInverted(true);
+
+        // Use inches as unit for encoder distances
+        leftEncoder.setDistancePerPulse((Math.PI * WHEEL_DIAMETER_INCH) / COUNTS_PER_REVOLUTION);
+        rightEncoder.setDistancePerPulse((Math.PI * WHEEL_DIAMETER_INCH) / COUNTS_PER_REVOLUTION);
     }
-    
-    
+
+    public void resetEncoders() {
+        leftEncoder.reset();
+        rightEncoder.reset();
+    }
+
+    public double getLeftDistanceInch()
+    {
+        return leftEncoder.getDistance();
+    }
+
+    public double getRightDistanceInch()
+    {
+        return rightEncoder.getDistance();
+    }
+
+    public double getAverageDistanceInch()
+    {
+        return (getLeftDistanceInch() + getRightDistanceInch()) / 2.0;
+    }
+
     /**
      * This method is called every 20 ms, no matter the mode. Use this for items like diagnostics
      * that you want ran during disabled, autonomous, teleoperated and test.
@@ -43,7 +80,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {}
-    
     
     /**
      * This autonomous (along with the chooser code above) shows how to select between different
@@ -58,14 +94,31 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         startTime = Timer.getFPGATimestamp();
+        resetEncoders();
     }
     
     
     /** This method is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
+//        driveTime(2.0);
+        driveDistance(5.0);
+    }
+
+    public void driveDistance(double distanceInch) {
+        double currentDistanceInch = getAverageDistanceInch();
+        if (currentDistanceInch < distanceInch) {
+            leftMotor.set(0.5);
+            rightMotor.set(0.5);
+        } else {
+            leftMotor.set(0);
+            rightMotor.set(0);
+        }
+    }
+
+    public void driveTime(double durationSec) {
         double currentTime = Timer.getFPGATimestamp();
-        if (currentTime - startTime < 2) {
+        if (currentTime - startTime < durationSec) {
             leftMotor.set(0.5);
             rightMotor.set(0.5);
         } else {
