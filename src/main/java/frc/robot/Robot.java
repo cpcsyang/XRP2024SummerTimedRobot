@@ -16,7 +16,8 @@ import edu.wpi.first.wpilibj.xrp.XRPMotor;
  * project.
  */
 public class Robot extends TimedRobot {
-
+    private final XRPMotor leftMotor = new XRPMotor(0);
+    private final XRPMotor rightMotor = new XRPMotor(1);
     
     /**
      * This method is run when the robot is first started up and should be used for any
@@ -63,7 +64,10 @@ public class Robot extends TimedRobot {
     
     /** This method is called periodically during operator control. */
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+        leftMotor.set(0.5);
+        rightMotor.set(0.5);
+    }
     
     
     /** This method is called once when the robot is disabled. */
