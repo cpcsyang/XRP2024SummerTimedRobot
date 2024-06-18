@@ -56,18 +56,15 @@ public class Robot extends TimedRobot {
         rightEncoder.reset();
     }
 
-    public double getLeftDistanceInch()
-    {
+    public double getLeftDistanceInch() {
         return leftEncoder.getDistance();
     }
 
-    public double getRightDistanceInch()
-    {
+    public double getRightDistanceInch() {
         return rightEncoder.getDistance();
     }
 
-    public double getAverageDistanceInch()
-    {
+    public double getAverageDistanceInch() {
         return (getLeftDistanceInch() + getRightDistanceInch()) / 2.0;
     }
 
