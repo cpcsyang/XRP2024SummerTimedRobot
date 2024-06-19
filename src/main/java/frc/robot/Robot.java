@@ -42,6 +42,7 @@ public class Robot extends TimedRobot {
 
     // Set up the XRPGyro
     private final XRPGyro gyro = new XRPGyro();
+    private double startGyroDegreesZ;
 
     // Set up the BuiltInAccelerometer
     private final BuiltInAccelerometer accelerometer = new BuiltInAccelerometer();
@@ -100,6 +101,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         startTime = Timer.getFPGATimestamp();
         resetEncoders();
+        startGyroDegreesZ = gyro.getAngleZ();
     }
     
     
@@ -107,7 +109,18 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
 //        driveTime(2.0);
-        driveDistance(5.0);
+//        driveDistance(5.0);
+        turnDegrees(90, -0.5); // CCW:positive, CW:negative
+    }
+
+    public void turnDegrees(double degrees, double speed) {
+        double gyroDegreesZ = gyro.getAngleZ(); // CCW:positive, CW:negative
+        if (Math.abs(gyroDegreesZ - startGyroDegreesZ) < degrees) {
+            diffDrive.arcadeDrive(0, speed);
+        } else {
+            diffDrive.arcadeDrive(0, 0);
+        }
+
     }
 
     public void driveDistance(double distanceInch) {
