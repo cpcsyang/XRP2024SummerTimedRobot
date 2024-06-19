@@ -109,22 +109,18 @@ public class Robot extends TimedRobot {
     public void driveDistance(double distanceInch) {
         double currentDistanceInch = getAverageDistanceInch();
         if (currentDistanceInch < distanceInch) {
-            leftMotor.set(0.5);
-            rightMotor.set(0.5);
+            diffDrive.arcadeDrive(0.5, 0);
         } else {
-            leftMotor.set(0);
-            rightMotor.set(0);
+            diffDrive.arcadeDrive(0, 0);
         }
     }
 
     public void driveTime(double durationSec) {
         double currentTime = Timer.getFPGATimestamp();
         if (currentTime - startTime < durationSec) {
-            leftMotor.set(0.5);
-            rightMotor.set(0.5);
+            diffDrive.arcadeDrive(0.5, 0);
         } else {
-            leftMotor.set(0);
-            rightMotor.set(0);
+            diffDrive.arcadeDrive(0, 0);
         }
     }
     
